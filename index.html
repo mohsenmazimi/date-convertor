@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+      }
+      main {
+        width: 100%;
+        height: 100vh;
+        background-color: rgb(17, 103, 243);
+        display: flex;
+        align-items: center;
+        direction: rtl;
+      }
+      .row {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .row > div:nth-of-type(1) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+      .row > div:nth-of-type(1) > h3 {
+        margin-left: 20px;
+        font-size: 30px;
+      }
+      .row > div:nth-of-type(1) > select,
+      .row > div:nth-of-type(2) > div > select {
+        width: 250px;
+        padding: 15px;
+        border: none;
+        font-weight: bold;
+        font-size: 20px;
+        border-radius: 10px;
+      }
+      .row > div:nth-of-type(2) {
+        display: flex;
+        width: 40%;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 30px;
+      }
+      .row > div:nth-of-type(2) > div {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        margin: 20px 0;
+      }
+
+      .row > div:nth-of-type(2) > div > span {
+        font-size: 30px;
+        width: 20%;
+      }
+      .row > div:nth-of-type(2) > div:nth-of-type(2) {
+        justify-content: space-evenly;
+      }
+      .row > div:nth-of-type(2) > div > input {
+        padding: 20px 20px;
+        border-radius: 20px;
+        width: 100px;
+        border: none;
+        font-size: 20px;
+      }
+      a {
+        display: block;
+        text-decoration: none;
+        background-color: rgb(98, 0, 255);
+        width: 200px;
+        padding: 20px 0;
+        border-radius: 20px;
+        font-size: 20px;
+        color: white;
+        font-weight: bold;
+        margin-top: 30px;
+      }
+      .row > div > div:last-of-type {
+        background-color: rgb(195, 246, 253);
+        padding: 30px 0;
+        border-radius: 10px;
+        margin-top: 40px;
+      }
+    </style>
+    <title></title>
+  </head>
+  <body>
+    <main>
+      <div class="row">
+        <div>
+          <h3>نوع تبدیل</h3>
+          <select id="typeConvert">
+            <option value="persianToMilady">شمسی به میلادی</option>
+            <option value="MiladytoPersian">میلادی به شمسی</option>
+          </select>
+        </div>
+        <div>
+          <div>
+            <span>روز</span>
+            <span>ماه</span>
+            <span>سال</span>
+          </div>
+          <div id="wrap_convertor">
+            <input class="day" type="number" max="30" />
+            <select class="convertOptionsPersian">
+              <option data-count="1" value="farvadin">فروردین</option>
+              <option data-count="2" value="ordibehesht">اردیبهشت</option>
+              <option data-count="3" value="khordad">خرداد</option>
+              <option data-count="4" value="tir">تیر</option>
+              <option data-count="5" value="mordad">مرداد</option>
+              <option data-count="6" value="shahrivar">شهریور</option>
+              <option data-count="7" value="mehr">مهر</option>
+              <option data-count="8" value="aban">آبان</option>
+              <option data-count="9" value="azar">آذر</option>
+              <option data-count="10" value="day">دی</option>
+              <option data-count="11" value="bahman">بهمن</option>
+              <option data-count="12" value="esfand">اسفند</option>
+            </select>
+            <input class="year" type="year" />
+          </div>
+          <a href="" id="convert" data-convert="persianToMilady">تبدیل کن</a>
+          <div id="resultConvert"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let typeConvert = document.getElementById("typeConvert");
+      let wrapConvertor = document.getElementById("wrap_convertor");
+      let resultConvert = document.getElementById("resultConvert");
+      let convert = document.getElementById("convert");
+      let convertOptionsPersian = document.querySelector(
+        ".convertOptionsPersian"
+      );
+      let day = document.querySelector(".day");
+      let year = document.querySelector(".year");
+      let convertOptionsEnAll = document.querySelectorAll(
+        ".convertOptionsEn>option"
+      );
+      let MonthEn = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      let MonthSh = [
+        "farvadin",
+        "ordinehesht",
+        "khordad",
+        "tir",
+        "mordad",
+        "shahrivar",
+        "mehr",
+        "aban",
+        "azar",
+        "dey",
+        "bahman",
+        "esfand",
+      ];
+      let dataEn = {
+        month: "January",
+        monthCount: "1",
+        monthDataEn: "",
+
+        day: 0,
+        year: 0,
+      };
+      typeConvert.addEventListener("change", function (e) {
+        convert.setAttribute("data-convert", e.target.value);
+        if (e.target.value == "MiladytoPersian") {
+          let conver = `<input id="dayEn" type="number" max="30" />
+            <select class="convertOptionsEn">
+              <option data-count='1' value="January">ژانویه</option>
+              <option data-count='2' value="February">فوریه</option>
+              <option data-count='3' value="March">مارس</option>
+              <option data-count='4' value="April">آوریل</option>
+              <option data-count='5' value="May">مه</option>
+              <option data-count='6' value="June">ژوئن</option>
+              <option data-count='7' value="July">ژوئیه</option>
+              <option data-count='8' value="August">اوت</option>
+              <option data-count='9' value="September">سپتامبر</option>
+              <option data-count='10' value="October">اکتبر</option>
+              <option data-count='11' value="November">نوامبر</option>
+              <option data-count='12' value="December">دسامبر</option>
+            </select>
+            <input id="yearEn" type="year" />`;
+          wrapConvertor.innerHTML = conver;
+        } else {
+          let conver = `<input class="day" type="number" max="30" />
+            <select class='convertOptionsPersian'>
+              <option data-count="1" value="farvadin">فروردین</option>
+              <option data-count="2" value="ordibehesht">اردیبهشت</option>
+              <option data-count="3" value="khordad">خرداد</option>
+              <option data-count="4" value="tir">تیر</option>
+              <option data-count="5" value="mordad">مرداد</option>
+              <option data-count="6" value="shahrivar">شهریور</option>
+              <option data-count="7" value="mehr">مهر</option>
+              <option data-count="8" value="aban">آبان</option>
+              <option data-count="9" value="azar">آذر</option>
+              <option data-count="10" value="day">دی</option>
+              <option data-count="11" value="bahman">بهمن</option>
+              <option data-count="12" value="esfand">اسفند</option>
+            </select>
+            <input class="year" type="year" />`;
+          wrapConvertor.innerHTML = conver;
+        }
+        let convertOptionsEn = document.querySelector(".convertOptionsEn");
+        if(convertOptionsEn !== null){
+          convertOptionsEn.addEventListener("change", function (e) {
+          dataEn.month = e.target.value;
+          for (let i = 0; i < convertOptionsEn.children.length; i++) {
+            let textOption = convertOptionsEn.children[i].value;
+            if (textOption == e.target.value) {
+              let monthCountSelect =
+                convertOptionsEn.children[i].getAttribute("data-count");
+              dataEn.monthCount = monthCountSelect;
+            }
+          }
+        });
+        }
+      });
+
+      let dataPersian = {
+        month: "farvadin",
+        monthCount: "1",
+        monthDataEn: "",
+
+        day: 0,
+        year: 0,
+      };
+
+      convertOptionsPersian.addEventListener("change", function (e) {
+        dataPersian.month = e.target.value;
+        for (let i = 0; i < convertOptionsPersian.children.length; i++) {
+          let textOption = convertOptionsPersian.children[i].value;
+          if (textOption == e.target.value) {
+            let monthCountSelect =
+              convertOptionsPersian.children[i].getAttribute("data-count");
+            dataPersian.monthCount = monthCountSelect;
+          }
+        }
+      });
+
+      let miladi = [];
+      let shamci = [];
+      for (let i = 0; i < 621; i++) {
+        shamci.push(0);
+      }
+      for (let i = 0; i < 2022; i++) {
+        miladi[i] = i;
+      }
+      for (let i = 0; i < 1401; i++) {
+        shamci.push(i);
+      }
+      convert.addEventListener("click", function (e) {
+        e.preventDefault();
+        let convertType = convert.getAttribute("data-convert");
+
+        if (convertType == "persianToMilady") {
+          if (day.value !== "" && day.value !== null && day.value < 30) {
+            dataPersian.day = Number(day.value);
+          }
+          if (year.value !== "" && year.value !== null) {
+            dataPersian.year = Number(year.value);
+          }
+          resultConvert.innerHTML = `
+        <span>${dataPersian.day}</span>
+            <span>${MonthEn[dataPersian.monthCount]}</span>
+            <span>${miladi[dataPersian.year + 621]}</span>
+            `;
+        } else {
+          let dayEnValue = document.querySelector("#dayEn").value;
+          let yearEnValue = document.querySelector("#yearEn").value;
+          if (dayEnValue !== "" && dayEnValue !== null && dayEnValue < 30) {
+            dataEn.day = Number(dayEnValue);
+          }
+          if (yearEnValue !== "" && yearEnValue !== null) {
+            dataEn.year = Number(yearEnValue);
+          }
+            resultConvert.innerHTML = `
+          <span>${dataEn.day}</span>
+              <span>${MonthSh[dataEn.monthCount]}</span>
+              <span>${shamci[dataEn.year]}</span>
+              `;
+        }
+      });
+      // console.log(shamci[1378+621]);
+      // console.log(miladi[1378+621]);
+    </script>
+  </body>
+</html>
